@@ -41,9 +41,10 @@ namespace Publisher.Notification
                     using (var channel = connection.CreateModel())
                     {
 
-                        /*
-                        
-                        
+                        // Установка prefetch count в 10 для очереди 'St_stream_queue'
+                        channel.BasicQos(0, 10, false);
+
+
                         // Аргументы для потока
                         var streamArgs = new Dictionary<string, object>
 
@@ -54,14 +55,14 @@ namespace Publisher.Notification
 
                         };
 
-                        */
+                        
 
-                        channel.ExchangeDeclare(exchange: "S_notification_exchange", type: ExchangeType.Fanout);
-                        channel.QueueDeclare(queue: "S_stream_queue",
+                        channel.ExchangeDeclare(exchange: "St_notification_exchange", type: ExchangeType.Fanout);
+                        channel.QueueDeclare(queue: "St_stream_queue",
                                              durable: true,
                                              exclusive: false,
                                              autoDelete: false,
-                                             arguments: null);
+                                             arguments: streamArgs);
 
 
 
@@ -74,7 +75,7 @@ namespace Publisher.Notification
                         var body = Encoding.UTF8.GetBytes(message);
 
                         channel.BasicPublish(
-                            exchange: "S_notification_exchange",
+                            exchange: "St_notification_exchange",
                             routingKey: "",
                             basicProperties: null,
                             body: body);

@@ -34,7 +34,7 @@ namespace Consumer.One
 
                         };
 
-                
+
 
                 channel.ExchangeDeclare(exchange: "St_notification_exchange", type: ExchangeType.Fanout);
                 channel.QueueDeclare(queue: "St_stream_queue",
@@ -59,7 +59,7 @@ namespace Consumer.One
                 };
 
 
-           //     channel.BasicQos(0, 1, false); // Установка prefetch count равным 1
+                //     channel.BasicQos(0, 1, false); // Установка prefetch count равным 1
 
                 channel.BasicConsume(queue: "St_stream_queue",
                 autoAck: false,
@@ -75,7 +75,7 @@ namespace Consumer.One
 
 
 
-            }
+        }
 
 
     }
