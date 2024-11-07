@@ -3,7 +3,7 @@ using RabbitMQ.Client.Events;
 using System.Text;
 
 
-namespace Consumer.One
+namespace Consumer.Two
 
 {
 
@@ -19,36 +19,36 @@ namespace Consumer.One
             using (var channel = connection.CreateModel())
 
             {
-                /*
-                
-                // Установка prefetch count в 10 для очереди 'St_stream_queue'
-                channel.BasicQos(0, 10, false);
 
-               
+
+                // Установка prefetch count в 10 для очереди 'St_stream_queue'
+                //   channel.BasicQos(0, 10, false);
+
 
                 // Аргументы для потока
-                var streamArgs = new Dictionary<string, object>
+                var quorumArgs = new Dictionary<string, object>
 
                         {
-                             { "x-queue-type", "stream" },
-                             { "max-length", 1000 },
-                             { "message-ttl", TimeSpan.FromMinutes(30).TotalMilliseconds }
+                             { "x-queue-type", "quorum" },
+                             { "x-delivery-limit", 5 }
+
 
                         };
 
 
 
-                */
 
-                channel.ExchangeDeclare(exchange: "not_stream_notification_exchange", type: ExchangeType.Fanout);
-                channel.QueueDeclare(queue: "not_stream_queue",
+                channel.ExchangeDeclare(exchange: "quorum_exchange", type: ExchangeType.Fanout);
+                channel.QueueDeclare(queue: "quorum_queue",
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
-                                     arguments: null);
+                                     arguments: quorumArgs);
 
-                channel.QueueBind(queue: "not_stream_queue",
-                  exchange: "not_stream_notification_exchange",
+         
+
+                channel.QueueBind(queue: "quorum_queue",
+                  exchange: "quorum_exchange",
                   routingKey: string.Empty);
 
                 var consumer = new EventingBasicConsumer(channel);
@@ -65,8 +65,8 @@ namespace Consumer.One
 
                 //     channel.BasicQos(0, 1, false); // Установка prefetch count равным 1
 
-                channel.BasicConsume(queue: "not_stream_queue",
-                autoAck: false,
+                channel.BasicConsume(queue: "quorum_queue",
+                autoAck: true,
                 consumer: consumer);
 
                 Console.ReadLine();

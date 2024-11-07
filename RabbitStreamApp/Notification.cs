@@ -42,31 +42,31 @@ namespace Publisher.Notification
                     {
 
 
-                        /*
+                       
 
                         // Установка prefetch count в 10 для очереди 'St_stream_queue'
-                        channel.BasicQos(0, 10, false);
+                       // channel.BasicQos(0, 10, false);
 
 
                         // Аргументы для потока
-                        var streamArgs = new Dictionary<string, object>
+                        var quorumArgs = new Dictionary<string, object>
 
                         {
-                             { "x-queue-type", "stream" },
-                             { "max-length", 1000 },
-                             { "message-ttl", TimeSpan.FromMinutes(30).TotalMilliseconds }
+                             { "x-queue-type", "quorum" },
+                             { "x-delivery-limit", 5 }
+                            
 
                         };
 
-                        */
+                        
 
 
-                        channel.ExchangeDeclare(exchange: "not_stream_notification_exchange", type: ExchangeType.Fanout);
-                        channel.QueueDeclare(queue: "not_stream_queue",
+                        channel.ExchangeDeclare(exchange: "quorum_exchange", type: ExchangeType.Fanout);
+                        channel.QueueDeclare(queue: "quorum_queue",
                                              durable: true,
                                              exclusive: false,
                                              autoDelete: false,
-                                             arguments: null);
+                                             arguments: quorumArgs);
 
 
 
@@ -79,7 +79,7 @@ namespace Publisher.Notification
                         var body = Encoding.UTF8.GetBytes(message);
 
                         channel.BasicPublish(
-                            exchange: "not_stream_notification_exchange",
+                            exchange: "quorum_exchange",
                             routingKey: "",
                             basicProperties: null,
                             body: body);
