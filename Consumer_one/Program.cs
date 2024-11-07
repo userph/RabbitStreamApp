@@ -20,7 +20,7 @@ namespace Consumer.One
 
             {
 
-                /*
+                
 
 
                 // Аргументы для потока
@@ -33,7 +33,7 @@ namespace Consumer.One
 
                         };
 
-                */
+                
 
                 channel.ExchangeDeclare(exchange: "S_notification_exchange", type: ExchangeType.Fanout);
                 channel.QueueDeclare(queue: "S_stream_queue",
