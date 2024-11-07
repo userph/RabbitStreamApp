@@ -19,10 +19,12 @@ namespace Consumer.One
             using (var channel = connection.CreateModel())
 
             {
+                /*
+                
                 // Установка prefetch count в 10 для очереди 'St_stream_queue'
                 channel.BasicQos(0, 10, false);
 
-
+               
 
                 // Аргументы для потока
                 var streamArgs = new Dictionary<string, object>
@@ -36,15 +38,17 @@ namespace Consumer.One
 
 
 
-                channel.ExchangeDeclare(exchange: "St_notification_exchange", type: ExchangeType.Fanout);
-                channel.QueueDeclare(queue: "St_stream_queue",
+                */
+
+                channel.ExchangeDeclare(exchange: "not_stream_notification_exchange", type: ExchangeType.Fanout);
+                channel.QueueDeclare(queue: "not_stream_queue",
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
-                                     arguments: streamArgs);
+                                     arguments: null);
 
-                channel.QueueBind(queue: "St_stream_queue",
-                  exchange: "St_notification_exchange",
+                channel.QueueBind(queue: "not_stream_queue",
+                  exchange: "not_stream_notification_exchange",
                   routingKey: string.Empty);
 
                 var consumer = new EventingBasicConsumer(channel);
@@ -61,7 +65,7 @@ namespace Consumer.One
 
                 //     channel.BasicQos(0, 1, false); // Установка prefetch count равным 1
 
-                channel.BasicConsume(queue: "St_stream_queue",
+                channel.BasicConsume(queue: "not_stream_queue",
                 autoAck: false,
                 consumer: consumer);
 
@@ -69,18 +73,8 @@ namespace Consumer.One
 
 
             }
-
-
-
-
-
-
         }
-
-
     }
-
-
 }
 
 
