@@ -58,7 +58,30 @@ namespace Consumer.Two
                 {
                     var body = e.Body;
                     var message = Encoding.UTF8.GetString(body.ToArray());
-                    Console.WriteLine("Received " + message);
+            
+
+
+
+                    if (e.DeliveryTag % 2 == 0)
+                    {
+
+                        Console.WriteLine($"Rejecting {message} with DeliveryTag {e.DeliveryTag}");
+                        channel.BasicReject(e.DeliveryTag, requeue: true);
+
+                    }
+
+                    else
+
+                    {
+                        Console.WriteLine("Received " + message);
+                        channel.BasicAck(e.DeliveryTag, multiple: false);
+
+                    }
+
+
+
+
+
 
                 };
 
@@ -66,7 +89,7 @@ namespace Consumer.Two
                 //     channel.BasicQos(0, 1, false); // Установка prefetch count равным 1
 
                 channel.BasicConsume(queue: "quorum_queue",
-                autoAck: true,
+                autoAck: false,
                 consumer: consumer);
 
                 Console.ReadLine();

@@ -6,7 +6,7 @@ namespace Publisher.Notification
 {
     public class Notification
     {
-        private static int counter = 0;
+        private static int counter = 1;
         private static Random rnd = new Random();
         private static readonly List<string> notificationText = new List<string> { "Server software updated...", "Cyber attack repelled...", "Exchange rates updated..." };
 
@@ -72,9 +72,9 @@ namespace Publisher.Notification
 
 
 
-                        string notificationText = GenerateNotificationText();
+                        string notificationText = GenerateNotificationText() + $"winth ID { counter++}";
 
-                        string message = $"Notification: {notificationText} winth ID {counter++}";
+                        string message = $"Notification: {notificationText}";
 
                         var body = Encoding.UTF8.GetBytes(message);
 
@@ -87,7 +87,7 @@ namespace Publisher.Notification
 
 
 
-                        Console.WriteLine($"Notification |{notificationText}| is sent into Fanout Exchange");
+                        Console.WriteLine($"Notification |{notificationText}| is sent into Exchange");
 
 
 
