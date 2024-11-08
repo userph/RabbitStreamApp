@@ -73,7 +73,8 @@ namespace Consumer.Two
 
 
                         Console.WriteLine($"Rejecting {message} with DeliveryTag {e.DeliveryTag} and Id {messId}");
-                        channel.BasicReject(e.DeliveryTag, requeue: true);
+                        //  channel.BasicReject(e.DeliveryTag, requeue: true);
+                        channel.BasicNack(deliveryTag: e.DeliveryTag, multiple: false, requeue: true);
 
                     }
 
