@@ -14,23 +14,29 @@ namespace Consumer.Two
         static void Main(string[] args)
         {
 
+            static int GetID(string phrase)
+            {
+                // Удаляем лишние пробелы и разбиваем строку на слова
+                string[] words = phrase.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                // Проверяем, есть ли слова, и возвращаем последнее
+                return int.Parse(words[^1]);
+            }
+
+
+
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
 
             {
 
-
-                // Установка prefetch count в 10 для очереди 'St_stream_queue'
-                //   channel.BasicQos(0, 10, false);
-
-
-                // Аргументы для потока
+                // Аргументы для quorum
                 var quorumArgs = new Dictionary<string, object>
 
                         {
                              { "x-queue-type", "quorum" },
-                             { "x-delivery-limit", 5 }
+                             { "x-delivery-limit", 1 }
 
 
                         };
@@ -39,7 +45,7 @@ namespace Consumer.Two
 
 
                 channel.ExchangeDeclare(exchange: "quorum_exchange", type: ExchangeType.Fanout);
-                channel.QueueDeclare(queue: "quorum_queue",
+                channel.QueueDeclare(queue: "Q_quorum_queue",
                                      durable: true,
                                      exclusive: false,
                                      autoDelete: false,
@@ -47,7 +53,7 @@ namespace Consumer.Two
 
          
 
-                channel.QueueBind(queue: "quorum_queue",
+                channel.QueueBind(queue: "Q_quorum_queue",
                   exchange: "quorum_exchange",
                   routingKey: string.Empty);
 
@@ -58,14 +64,15 @@ namespace Consumer.Two
                 {
                     var body = e.Body;
                     var message = Encoding.UTF8.GetString(body.ToArray());
-            
+                    int messId = GetID(message);
 
 
 
-                    if (e.DeliveryTag % 2 == 0)
+                    if (messId % 3 == 0)
                     {
 
-                        Console.WriteLine($"Rejecting {message} with DeliveryTag {e.DeliveryTag}");
+
+                        Console.WriteLine($"Rejecting {message} with DeliveryTag {e.DeliveryTag} and Id {messId}");
                         channel.BasicReject(e.DeliveryTag, requeue: true);
 
                     }
@@ -73,13 +80,14 @@ namespace Consumer.Two
                     else
 
                     {
-                        Console.WriteLine("Received " + message);
+                        Console.WriteLine("Received " + message + " with DeliveryTag " + e.DeliveryTag + " and Id " + messId);
+
                         channel.BasicAck(e.DeliveryTag, multiple: false);
 
                     }
 
 
-
+                     
 
 
 
@@ -88,7 +96,7 @@ namespace Consumer.Two
 
                 //     channel.BasicQos(0, 1, false); // Установка prefetch count равным 1
 
-                channel.BasicConsume(queue: "quorum_queue",
+                channel.BasicConsume(queue: "Q_quorum_queue",
                 autoAck: false,
                 consumer: consumer);
 

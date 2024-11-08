@@ -53,7 +53,7 @@ namespace Publisher.Notification
 
                         {
                              { "x-queue-type", "quorum" },
-                             { "x-delivery-limit", 5 }
+                             { "x-delivery-limit", 1 }
                             
 
                         };
@@ -62,7 +62,7 @@ namespace Publisher.Notification
 
 
                         channel.ExchangeDeclare(exchange: "quorum_exchange", type: ExchangeType.Fanout);
-                        channel.QueueDeclare(queue: "quorum_queue",
+                        channel.QueueDeclare(queue: "Q_quorum_queue",
                                              durable: true,
                                              exclusive: false,
                                              autoDelete: false,
